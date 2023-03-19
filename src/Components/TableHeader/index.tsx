@@ -12,7 +12,6 @@ const TableHeader: React.FC = () => {
         <TableCell align="center">E-MAIL</TableCell>
         <TableCell align="center">GENDER</TableCell>
         <TableCell align="center">STATUS</TableCell>
-        <TableCell align="center">DELETE</TableCell>
       </TableRow>
     </TableHead>
   );

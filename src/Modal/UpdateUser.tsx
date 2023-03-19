@@ -1,29 +1,32 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import { addUsers, getAllUsers } from "../api/users";
+import { addUsers, getAllUsers,putUser } from "../api/users";
 import { User, Gender, Status } from "../Components/UsersTable";
 import { useSelector } from "react-redux/es/hooks/useSelector";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import {IUserData} from "../types";
 
 interface UserModalProps {
-  onAddUser: (user: User) => void;
-
+  onAddUser: (user: IUserData) => void;
+  row: any;
   show: boolean;
   onHide: () => void;
-
 }
-const UserModal = ({ show, onHide, onAddUser}: UserModalProps) => {
-  const [name, setName] = useState("");
+const UpdateUserModal = ({ row,show, onHide, onAddUser}: UserModalProps) => {
+  const [name, setName] = useState(row?.name);
 
-  const [email, setEmail] = useState("");
-  const [gender, setGender] = useState<Gender>(Gender.Male);
-  const [status, setStatus] = useState<Status>(Status.Active);
+  const [email, setEmail] = useState(row?.email);
+  const [person, setPerson] = useState<IUserData>({id:row.id,name:"",email:"",gender:"",status:""});
+  const [gender, setGender] = useState<Gender>(row?.gender);
+  const [status, setStatus] = useState<Status>(row?.status);
 
   const {token,eleman} = useSelector((state: any) => state.auth);
 
+const navTo = useNavigate();
   const handleAddUser = async() => {
-    const newUser:User = {
-      id: Math.ceil(Math.random() * 100000).toString(),
+    const newUser: User = {
+      id: row?.id,
       name,
       email,
       gender,
@@ -31,7 +34,20 @@ const UserModal = ({ show, onHide, onAddUser}: UserModalProps) => {
     };
     
     console.log(newUser);
-    await addUsers(newUser, token);
+    // await putUser(newUser, token)
+    //   .then((data) => {
+    //     if (!data.ok) {
+    //       toast.error(`${data.message}`);
+    //     }
+    //     if (data.ok) {
+    //       getAllUsers(token,eleman)
+    //       toast.success("Success!");
+    //       navTo("/users");
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     throw new Error(e);
+    //   });;
     onAddUser(newUser);
 
     // await getAllUsers(token, eleman);
@@ -45,7 +61,7 @@ const UserModal = ({ show, onHide, onAddUser}: UserModalProps) => {
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Add User</Modal.Title>
+        <Modal.Title>Update User</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -84,7 +100,9 @@ const UserModal = ({ show, onHide, onAddUser}: UserModalProps) => {
             <Form.Label>Status</Form.Label>
             <Form.Select
               value={status}
-              onChange={(e) => setStatus(e.target.value as Status)}
+              onChange={(e) =>
+                setStatus(e.target.value as Status)
+              }
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>
@@ -97,11 +115,11 @@ const UserModal = ({ show, onHide, onAddUser}: UserModalProps) => {
           Close
         </Button>
         <Button variant="primary" onClick={handleAddUser}>
-          Add User
+          Update User
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default UserModal;
+export default UpdateUserModal;

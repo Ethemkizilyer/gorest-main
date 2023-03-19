@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {  deleteUser, getAllUsers } from "../../api/users";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Card, Col, Modal, Pagination, Row } from "react-bootstrap";
+// import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
 import {
   Grid,
   Paper,
@@ -12,18 +13,24 @@ import {
   Table,
   Box,
   CircularProgress,
-  Pagination,
+  // Pagination,
 } from "@mui/material";
+
+
+
+
 import GenderSelect from "../GenderSelect";
 import TableHeader from "../TableHeader";
 import { useDispatch } from "react-redux/es/exports";
-import IUserData from "../../types";
+import {IUserData} from "../../types";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import {  Container } from "react-bootstrap";
 import UserModal from "../../Modal/AddUserModal";
 import { pageMinus, pagePlus } from "../../features/authSlice";
 import { toast } from "react-toastify";
 import CartCard from "../CartCard";
+import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
+import { Ellipsis } from "react-bootstrap/esm/PageItem";
 
 export type User = {
   id: string;
@@ -44,9 +51,10 @@ export enum Status {
   Inactive = "inactive",
 }
 
+
 const UsersTable: React.FC = () => {
   const DEFAULT_PAGE_INDEX = 0;
-  const DEFAULT_ROWS_INDEX = 5;
+  const DEFAULT_ROWS_INDEX = 6;
   const DEFAULT_GENDER = "All";
 
   const [rows, setRows] = useState<Array<IUserData>>([]);
@@ -113,30 +121,7 @@ const handleConfirm = async(id: string | number) => {
     
   }
 };
-    // const changeUserHandler = (id:string) => {
-    //   dispatch(pageMinus())
-    //   console.log(token);
-    //   if (!token) {
-    //     toast.error("Go home and add token!");
-    //   }
-    //   if (id && token) {
-    //     deleteUser(id, token)
-    //       .then((data) => {
-    //         if (!data.ok) {
-    //           toast.error(`${data.message}`);
-    //         }
-    //         if (data.ok) {
-    //           toast.success("Success!");
-    //           navTo("/users");
-    //         }
-    //       })
-    //       .catch((e) => {
-    //         throw new Error(e);
-    //       });
-    //   }
-    //   return;
-    // };
-
+ 
 
 
 
@@ -166,48 +151,136 @@ const handleConfirm = async(id: string | number) => {
     });
   };
 
-  const handleChangePage = (_: any, newPage: number) => {
+  const handleChangePage = ( newPage: number) => {
     setPage(newPage - 1);
   };
 
+
+    const [activePage, setActivePage] = useState(1);
+    const cardsPerPage = 6;
+    // const totalPages = Math.ceil(pageQty.length / cardsPerPage);
+
+    const handlePaginationClick = (event:any) => {
+      setActivePage(event);
+      handleChangePage(event)
+    };
+
+    const renderCards = () => {
+      const startIndex = (activePage - 1) * cardsPerPage;
+      const endIndex = startIndex + cardsPerPage;
+      return selectedByGender()
+        .slice(startIndex, endIndex)
+        .map((card) => (
+          <CartCard setRows={setRows} rows={rows} row={card} handleConfirm={handleConfirm} key={card.id} />
+        ));
+    };
+
+    const renderPaginationItems = () => {
+      const paginationItems = [];
+      paginationItems.push(
+        <Pagination.Prev
+          key="prev"
+          disabled={activePage === 1}
+          onClick={() => handlePaginationClick(activePage - 1)}
+        >
+          <ArrowLeft />
+        </Pagination.Prev>
+      );
+
+      // Render the first page
+      if (pageQty > 0) {
+        paginationItems.push(
+          <Pagination.Item
+            key={1}
+            active={activePage === 1}
+            onClick={() => handlePaginationClick(1)}
+          >
+            1
+          </Pagination.Item>
+        );
+      }
+
+      // Render the middle pages (up to 3)
+      let startPage = Math.max(2, activePage - 1);
+      let endPage = Math.min(pageQty - 1, activePage + 1);
+
+      if (startPage > 2) {
+        // Render an ellipsis before the start page
+        paginationItems.push(
+          <Pagination.Ellipsis key="ellipsis-start" disabled={true} />
+        );
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        paginationItems.push(
+          <Pagination.Item
+            key={i}
+            active={activePage === i}
+            onClick={() => handlePaginationClick(i)}
+          >
+            {i}
+          </Pagination.Item>
+        );
+      }
+
+      if (endPage < pageQty - 1) {
+        // Render an ellipsis after the end page
+        paginationItems.push(
+          <Pagination.Ellipsis key="ellipsis-end" disabled={true} />
+        );
+      }
+
+      // Render the last page
+      if (pageQty > 1) {
+        paginationItems.push(
+          <Pagination.Item
+            key={pageQty}
+            active={activePage === pageQty}
+            onClick={() => handlePaginationClick(pageQty)}
+          >
+            {pageQty}
+          </Pagination.Item>
+        );
+      }
+
+      paginationItems.push(
+        <Pagination.Next
+          key="next"
+          disabled={activePage === pageQty}
+          onClick={() => handlePaginationClick(activePage + 1)}
+        >
+          <ArrowRight />
+        </Pagination.Next>
+      );
+      return paginationItems;
+    };
   
 
   return (
-    <Grid
-      container
-      spacing={5}
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Grid
-        item
-        xs={8}
-        display="flex"
-        flexDirection="row"
-        justifyContent="space-between"
-        mt={7}
-      >
+    <Container>
+      
+
+      <div className="d-flex justify-content-between vertical-align-middle align-items-center mt-3">
         <GenderSelect setGender={setGender} gender={gender} />
-        <Pagination
+        <Pagination>{renderPaginationItems()}</Pagination>
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+        Kullanıcı Ekle
+      </Button>
+      <UserModal
+        onAddUser={handleAddUser}
+        show={showModal}
+        onHide={handleModalClose}
+      />
+      </div>
+
+      {/* <Pagination
           count={pageQty}
           size="small"
           page={page + 1}
           variant="outlined"
           shape="rounded"
           onChange={handleChangePage}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <Button variant="primary" onClick={() => setShowModal(true)}>
-          Kullanıcı Ekle
-        </Button>
-        <UserModal
-          onAddUser={handleAddUser}
-          show={showModal}
-          onHide={handleModalClose}
-        />
-      </Grid>
+        /> */}
 
       <Grid item xs={8}>
         {isLoading ? (
@@ -215,28 +288,14 @@ const handleConfirm = async(id: string | number) => {
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHeader />
-              <TableBody>
-                {selectedByGender()
-                  .slice(
-                    page * DEFAULT_ROWS_INDEX,
-                    page * DEFAULT_ROWS_INDEX + DEFAULT_ROWS_INDEX
-                  )
-                  .map((row: IUserData) => (
-                    <CartCard
-                      row={row}
-                      handleConfirm={handleConfirm}
-                      key={row.id}
-                    />
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <div className="container mb-3">
+            <div className="row d-flex align-items-center justify-content-center gap-2">
+              {renderCards()}
+            </div>
+          </div>
         )}
       </Grid>
-    </Grid>
+    </Container>
   );
 };
 

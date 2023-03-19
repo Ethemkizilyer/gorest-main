@@ -1,36 +1,33 @@
 import React from "react";
+import { Col, Form, Row } from "react-bootstrap";
 
-import {
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Box,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+type Props = {
+  gender: string;
+  setGender: React.FC<React.SetStateAction<string>>;
+};
 
-const GenderSelect = ({ setGender, gender }: any) => {
-  const handleChange = (event: SelectChangeEvent) => {
-    setGender(event.target.value as string);
+const GenderSelect= ({ gender, setGender }:any) => {
+  const handleChange: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
+    setGender(event.target.value);
   };
 
   return (
-    <Box sx={{ maxWidth: 120 }}>
-      <FormControl fullWidth>
-        <InputLabel id='gender-select-label'>Gender</InputLabel>
-        <Select
-          labelId='gender-select-label'
-          id='gender-select'
-          value={gender}
-          label='Gender'
-          onChange={handleChange}
-        >
-          <MenuItem value={"All"}>All</MenuItem>
-          <MenuItem value={"Male"}>Male</MenuItem>
-          <MenuItem value={"Female"}>Female</MenuItem>
-        </Select>
-      </FormControl>
-    </Box>
+    <Form.Group style={{ width: "110px" }} controlId="formGridState">
+      <Form.Label as="h5" id="gender-select-label">
+        Gender
+      </Form.Label>
+      <Form.Select
+        as="select"
+        id="gender-select"
+        value={gender}
+        onChange={handleChange}
+        aria-labelledby="gender-select-label"
+      >
+        <option value="All">All</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </Form.Select>
+    </Form.Group>
   );
 };
 

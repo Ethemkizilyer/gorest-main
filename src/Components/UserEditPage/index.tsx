@@ -2,179 +2,156 @@ import React, {  useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { getOneUser, putUser } from "../../api/users";
+import { getOneUser, getTodos, putUser } from "../../api/users";
 
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  MenuItem,
-  Paper,
-  Select,
-  SelectChangeEvent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TextField,
-} from "@mui/material";
 import TableHeader from "../TableHeader";
-import IUserData from "../../types";
+
 
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux/es/hooks/useSelector";
+import { Button, Card, Container, Row, Spinner,Table } from "react-bootstrap";
+import TodosModal from "../../Modal/userTodosModal";
+
+// Main todos data type
+type todos= {
+  id: string ;
+  user_id: string | undefined ;
+  title : string;
+  due_on: string;
+  status: string;
+}
 
 const UserEditPage: React.FC = () => {
-  const [user, setUser] = useState<IUserData | undefined>();
+  // const [user, setUser] = useState<IUserTodos | undefined>();
+  const [data, setData] = useState<todos[] | undefined>();
   const [isLoading, setLoading] = useState<boolean>();
   // const { token } = useContext(TokenContext);
-const token = useSelector((state:any) => state.auth.token);
+const {token,eleman} = useSelector((state:any) => state.auth);
   let { id } = useParams<{ id?: string | undefined }>();
   const navTo = useNavigate();
-
+const [showModal, setShowModal] = useState(false);
 
 
   useEffect(() => {
     setLoading(true);
     if (id) {
-      getOneUser(id,token).then((data) => {
+      getTodos(id, token).then((asd) => {
+        console.log(asd);
         setLoading(false);
-        setUser(data);
+        setData(asd);
       });
     }
     /* eslint-disable-next-line */
-  }, []);
+    // console.log(getTodos(id,token))
+  }, [showModal]);
 
-  const handleChangeInput =
-    (prop: keyof IUserData) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUser((previousValue: IUserData | undefined) => {
-        if (previousValue) {
-          previousValue[prop] = event.target.value;
-          return { ...previousValue };
-        }
-        return;
-      });
-    };
+  // console.log(data)
 
-  const handleChangeSelect =
-    (prop: keyof IUserData) => (event: SelectChangeEvent) => {
-      setUser((previousValue: IUserData | undefined) => {
-        if (previousValue) {
-          previousValue[prop] = event.target.value;
-          return { ...previousValue };
-        }
-        return;
-      });
-    };
+  // const handleChangeInput =
+  //   (prop: keyof IUserData) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     setUser((previousValue: IUserData | undefined) => {
+  //       if (previousValue) {
+  //         previousValue[prop] = event.target.value;
+  //         return { ...previousValue };
+  //       }
+  //       return;
+  //     });
+  //   };
 
-  const changeUserHandler = () => {
-    console.log(token);
-    if (!token) {
-      toast.error("Go home and add token!");
-    }
-    if (user && token) {
-      putUser(user, token)
-        .then((data) => {
-          if (!data.ok) {
-            toast.error(`${data.message}`);
-          }
-          if (data.ok) {
-            toast.success("Success!");
-            navTo("/users");
-          }
-        })
-        .catch((e) => {
-          throw new Error(e);
-        });
-    }
-    return;
-  };
+  // const handleChangeSelect =
+  //   (prop: keyof IUserData) => (event: SelectChangeEvent) => {
+  //     setUser((previousValue: IUserData | undefined) => {
+  //       if (previousValue) {
+  //         previousValue[prop] = event.target.value;
+  //         return { ...previousValue };
+  //       }
+  //       return;
+  //     });
+  //   };
+
+  // const changeUserHandler = () => {
+  //   console.log(token);
+  //   if (!token) {
+  //     toast.error("Go home and add token!");
+  //   }
+  //   if (user && token) {
+  //     putUser(user, token,eleman)
+  //       .then((data) => {
+  //         if (!data.ok) {
+  //           toast.error(`${data.message}`);
+  //         }
+  //         if (data.ok) {
+  //           toast.success("Success!");
+  //           navTo("/users");
+  //         }
+  //       })
+  //       .catch((e) => {
+  //         throw new Error(e);
+  //       });
+  //   }
+  //   return;
+  // };
+
+   const handleAddUser = async(us:todos) => {
+    await getTodos(id, token);
+    console.log("user")
+   };
+
+     const handleModalClose = () => {
+       setShowModal(false);
+     };
 
   return (
-    <Grid
-      container
-      direction='column'
-      justifyContent='center'
-      alignItems='center'
-      sx={{ mt: 5 }}
-      spacing={3}
-    >
+    <Container className="mt-2">
+      <Button variant="primary" onClick={() => setShowModal(true)}>
+        Yorum Ekle
+      </Button>
+      <TodosModal
+        onAddUser={handleAddUser}
+        show={showModal}
+        onHide={handleModalClose}
+        id={id}
+      />
       {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <CircularProgress />
-        </Box>
+        <Spinner
+          className="text-center mx-auto "
+          animation="border"
+          variant="primary"
+        />
       ) : (
-        <>
-          <Grid item xs={10}>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-                <TableHeader />
-                <TableBody>
-                  {user && (
-                    <TableRow
-                      key={user.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                        cursor: "pointer",
-                      }}
-                    >
-                      <TableCell component='th' scope='row'>
-                        {user.id}
-                      </TableCell>
-                      <TableCell align='right'>
-                        <TextField
-                          variant='outlined'
-                          value={user.name}
-                          onChange={handleChangeInput("name")}
-                        />
-                      </TableCell>
-                      <TableCell align='right'>
-                        <TextField
-                          variant='outlined'
-                          value={user.email}
-                          onChange={handleChangeInput("email")}
-                          sx={{
-                            input: { textAlign: "center" },
-                            margin: "15px",
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell align='right'>
-                        <Select
-                          sx={{ width: "110px" }}
-                          value={user.gender}
-                          onChange={handleChangeSelect("gender")}
-                        >
-                          <MenuItem value={"male"}>Male</MenuItem>
-                          <MenuItem value={"female"}>Female</MenuItem>
-                        </Select>
-                      </TableCell>
-                      <TableCell align='right'>
-                        <Select
-                          sx={{ width: "110px" }}
-                          value={user.status}
-                          onChange={handleChangeSelect("status")}
-                        >
-                          <MenuItem value={"active"}>Active</MenuItem>
-                          <MenuItem value={"inactive"}>Inactive</MenuItem>
-                        </Select>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-          <Grid item>
-            <Button variant='contained' onClick={changeUserHandler}>
-              Save
-            </Button>
-          </Grid>
-        </>
+        <Table className="mt-2" striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Deadline</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.length ? (
+              data.map((item: todos) => (
+                <tr key={item.id}>
+                  <td>{item.id}</td>
+                  <td>{item.title}</td>
+                  {/* <td> {new Date(item.due_on).toLocaleString()}</td> */}
+                  <td> {new Date(item.due_on).toLocaleString()}</td>
+                  <td>
+                    {new Date().toJSON() > item.due_on
+                      ? "Completed"
+                      : "Pending"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="text-center" >Görüntülenecek Veri Yok.</td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
       )}
-    </Grid>
+    </Container>
   );
 };
 

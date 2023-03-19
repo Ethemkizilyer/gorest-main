@@ -1,82 +1,142 @@
-import { Button, Modal } from "react-bootstrap";
-import {
-  Grid,
-  Paper,
-  TableRow,
-  TableContainer,
-  TableCell,
-  TableBody,
-  Table,
-  Box,
-  CircularProgress,
-  Pagination,
-} from "@mui/material";
+import { Button, Col, Modal } from "react-bootstrap";
+
 import React from "react";
-import IUserData from "../types";
+import {IUserData} from "../types";
 import {useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Card from "react-bootstrap/Card";
+import UserModal from "../Modal/AddUserModal";
+import UpdateUserModal from "../Modal/UpdateUser";
+import { useDispatch, useSelector } from "react-redux";
+import { Gender, Status } from "./UsersTable";
+import { toast } from "react-toastify";
+import { getAllUsers, putUser } from "../api/users";
 interface CartProps {
   row: IUserData;
   handleConfirm: (id: string | number) => void;
+  setRows: React.FC<React.SetStateAction<IUserData[]>>;
+  rows: IUserData[];
 }
-
-const CartCard: React.FC<CartProps> = ({
-  row,
-  handleConfirm,
-
-}) => {
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  gender: Gender;
+  status: Status;
+};
+const CartCard: React.FC<CartProps> = ({rows,setRows, row, handleConfirm}) => {
+  const { token, eleman } = useSelector((state: any) => state.auth);
+  const dispatch = useDispatch();
   const [showModals, setShowModals] = useState(false);
- const navTo = useNavigate();
- const handleDelete = () => {
-   handleConfirm(row.id);
-   setShowModals(false);
- };
+  const [showModa, setShowModa] = useState(false);
+  const navTo = useNavigate();
+  const handleDelete = () => {
+    handleConfirm(row.id);
+    setShowModa(false);
+  };
+  const [user, setUser] = useState<IUserData[] | undefined>([]);
 
- const rowClickHandler = (id: string) => {
-   navTo(`/Users/${id}/edit`);
- };
+  const rowClickHandler = (id: string) => {
+    navTo(`/Users/${id}/edit`);
+    console.log("detail");
+  };
+  const rowClickHand = (id: string) => {
+    //  navTo(`/Users/${id}/edit`);
+    setShowModals(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModals(false);
+  };
+
+  const changeUserHandler = (user: IUserData) => {
+    console.log(token);
+    if (!token) {
+      toast.error("Go home and add token!");
+    }
+    if (user && token) {
+      putUser(user, token,eleman)
+        .then((data:any) => {
+          if (!data.ok) {
+            toast.error(`${data.message}`);
+          }
+          if (data.ok) {
+            setRows(
+              rows.map((item) =>
+                item.id === data.message.id
+                  ? data.message
+                  : item
+              )
+            );
+            toast.success("Success!");
+            navTo("/users");
+          }
+        })
+        .catch((e) => {
+          throw new Error(e);
+        });
+    }
+    return getAllUsers(token, eleman);
+  };
 
   return (
-    <TableRow
+    <Card
+      className="my-card"
       key={row.id}
-      sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
-        "&:hover": { backgroundColor: "#1976d2" },
-        cursor: "pointer",
-      }}
+      style={{ width: "18rem", height: "15rem", cursor: "pointer" }}
     >
-      <TableCell component="th" scope="row">
-        {row.id.toString()}
-      </TableCell>
-      <TableCell
-        onClick={() => rowClickHandler(row.id.toString())}
-        align="center"
-      >
-        {row.name}
-      </TableCell>
-      <TableCell align="center">{row.email}</TableCell>
-      <TableCell align="center">{row.gender}</TableCell>
-      <TableCell align="center">{row.status}</TableCell>
-      <TableCell align="center">
-        <Button variant="danger" onClick={() => setShowModals(true)}>
-          Delete
-        </Button>
-        <Modal show={showModals} onHide={() => setShowModals(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Confirmation</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to delete this user?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModals(false)}>
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDelete}>
-              Delete
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </TableCell>
-    </TableRow>
+      <Card.Body>
+        <Card.Title>{row.name}</Card.Title>
+
+        <Card.Text>
+          <strong>Email:</strong>
+          {row.email}
+          <br />
+          <strong>Gender:</strong> {row.gender} <br />
+          <strong>Status:</strong> {row.status}
+        </Card.Text>
+        <Col
+          style={{ width: "80%" }}
+          className="position-absolute bottom-0 mb-3 d-flex align-items-center justify-content-between"
+        >
+          <Button
+            variant="warning"
+            onClick={() => rowClickHand(row.id.toString())}
+          >
+            Update
+          </Button>
+          <UpdateUserModal
+            onAddUser={changeUserHandler}
+            show={showModals}
+            onHide={handleModalClose}
+            row={row}
+          />
+          <Button
+            variant="success"
+            onClick={() => rowClickHandler(row.id.toString())}
+          >
+            Detail
+          </Button>
+          <Button variant="danger" onClick={() => setShowModa(true)}>
+            Delete
+          </Button>
+          <Modal show={showModa} onHide={() => setShowModa(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Are you sure?</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Do you really want to delete this card?</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowModa(false)}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={handleDelete}>
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Col>
+      </Card.Body>
+    </Card>
   );
 };
 
