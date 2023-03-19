@@ -1,18 +1,18 @@
 import React from "react";
-import { Col, Form, Row } from "react-bootstrap";
+import {Form} from "react-bootstrap";
 
 type Props = {
   gender: string;
   setGender: React.FC<React.SetStateAction<string>>;
 };
 
-const GenderSelect= ({ gender, setGender }:any) => {
+const GenderSelect = ({ gender, setGender }: Props) => {
   const handleChange: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
     setGender(event.target.value);
   };
 
   return (
-    <Form.Group style={{ width: "110px" }} controlId="formGridState">
+    <Form.Group className="mb-2" style={{ width: "110px" }} controlId="formGridState">
       <Form.Label as="h5" id="gender-select-label">
         Gender
       </Form.Label>

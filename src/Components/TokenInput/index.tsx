@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { loginSuccess } from "../../features/authSlice";
 
 const TokenInput = () => {
-  // const { setToken } = useContext(TokenContext);
   const [username, setUsername] = useState("");
   const [token, setToken] = useState("");
   const [showToken, setShowToken] = useState(false);
@@ -23,12 +22,10 @@ const TokenInput = () => {
     setShowToken(!showToken);
   };
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [userInfo, setUserInfo] = useState({currentUser:"",token:""});
-const dispatch=useDispatch()
-const navigate=useNavigate()
   const handleLogin = async () => {
-
     if (username && token) {
       const response = await fetch("https://gorest.co.in/public/v2/users", {
         method: "POST",
@@ -38,31 +35,34 @@ const navigate=useNavigate()
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+      // console.log(response);
+      
       // yanıt kontrol edilir
       if (response.status === 401) {
         toast.error("Geçersiz token. Lütfen tekrar deneyin.");
-        return setUserInfo({ username: "", token: "" });
+        setToken("");
+        setUsername("");
       } else {
-        dispatch(loginSuccess({currentUser:username,token:token}));
-        // setToken(tokenState);
+        dispatch(loginSuccess({ currentUser: username, token: token }));
+
         toast.success(`Hoşgeldin ${username}!`);
-        // setTokenState("");
-        setUserInfo({ username: "", token: "" });
-        return navigate("/users/*");
+        setToken("");
+        setUsername("");
+
+        return navigate("/users");
       }
     } else {
       toast.error("Kullanıcı adınızı ve token ekleyin!");
     }
   };
-const isFormValid =
-  username.length >= 3 &&
-  /^[a-zA-Z0-9]*$/.test(token) &&
-  /\d/.test(token) &&
-  /[a-zA-Z]/.test(token);
+  const isFormValid =
+    username.length >= 3 &&
+    /^[a-zA-Z0-9]*$/.test(token) &&
+    /\d/.test(token) &&
+    /[a-zA-Z]/.test(token);
 
   return (
-    <Form className="mt-3 container">
+    <Form className="mt-3 w-75" >
       <Form.Group controlId="formUsername">
         <Form.Label>Username</Form.Label>
         <Form.Control

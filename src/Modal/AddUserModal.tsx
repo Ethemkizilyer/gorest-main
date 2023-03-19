@@ -1,40 +1,37 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import { addUsers, getAllUsers } from "../api/users";
+import { addUsers } from "../api/users";
 import { User, Gender, Status } from "../Components/UsersTable";
 import { useSelector } from "react-redux/es/hooks/useSelector";
-import {IUserData} from "../types";
 
 interface UserModalProps {
   onAddUser: (user: User) => void;
 
   show: boolean;
   onHide: () => void;
-
 }
-const UserModal = ({ show, onHide, onAddUser}: UserModalProps) => {
+const UserModal = ({ show, onHide, onAddUser }: UserModalProps) => {
   const [name, setName] = useState("");
 
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.Male);
   const [status, setStatus] = useState<Status>(Status.Active);
 
-  const {token,eleman} = useSelector((state: any) => state.auth);
+  const { token } = useSelector((state: any) => state.auth);
 
-  const handleAddUser = async() => {
-    const newUser:User = {
+  const handleAddUser = async () => {
+    const newUser: User = {
       id: Math.ceil(Math.random() * 100000).toString(),
       name,
       email,
       gender,
       status,
     };
-    
+
     console.log(newUser);
     await addUsers(newUser, token);
     onAddUser(newUser);
 
-    // await getAllUsers(token, eleman);
     setName("");
     setEmail("");
     setGender(Gender.Male);

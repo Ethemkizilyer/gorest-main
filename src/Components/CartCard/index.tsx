@@ -1,16 +1,14 @@
 import { Button, Col, Modal } from "react-bootstrap";
-
 import React from "react";
-import {IUserData} from "../types";
-import {useState } from "react";
+import { IUserData } from "../../types";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
-import UserModal from "../Modal/AddUserModal";
-import UpdateUserModal from "../Modal/UpdateUser";
-import { useDispatch, useSelector } from "react-redux";
-import { Gender, Status } from "./UsersTable";
+import UpdateUserModal from "../../Modal/UpdateUser";
+import { useSelector } from "react-redux";
+import { Gender, Status } from "../UsersTable";
 import { toast } from "react-toastify";
-import { getAllUsers, putUser } from "../api/users";
+import { getAllUsers, putUser } from "../../api/users";
 interface CartProps {
   row: IUserData;
   handleConfirm: (id: string | number) => void;
@@ -24,9 +22,13 @@ export type User = {
   gender: Gender;
   status: Status;
 };
-const CartCard: React.FC<CartProps> = ({rows,setRows, row, handleConfirm}) => {
+const CartCard: React.FC<CartProps> = ({
+  rows,
+  setRows,
+  row,
+  handleConfirm,
+}) => {
   const { token, eleman } = useSelector((state: any) => state.auth);
-  const dispatch = useDispatch();
   const [showModals, setShowModals] = useState(false);
   const [showModa, setShowModa] = useState(false);
   const navTo = useNavigate();
@@ -34,14 +36,11 @@ const CartCard: React.FC<CartProps> = ({rows,setRows, row, handleConfirm}) => {
     handleConfirm(row.id);
     setShowModa(false);
   };
-  const [user, setUser] = useState<IUserData[] | undefined>([]);
 
   const rowClickHandler = (id: string) => {
-    navTo(`/Users/${id}/edit`);
-    console.log("detail");
+    navTo(`/users/${id}/todos`);
   };
   const rowClickHand = (id: string) => {
-    //  navTo(`/Users/${id}/edit`);
     setShowModals(true);
   };
 
@@ -55,17 +54,15 @@ const CartCard: React.FC<CartProps> = ({rows,setRows, row, handleConfirm}) => {
       toast.error("Go home and add token!");
     }
     if (user && token) {
-      putUser(user, token,eleman)
-        .then((data:any) => {
+      putUser(user, token, eleman)
+        .then((data: any) => {
           if (!data.ok) {
             toast.error(`${data.message}`);
           }
           if (data.ok) {
             setRows(
               rows.map((item) =>
-                item.id === data.message.id
-                  ? data.message
-                  : item
+                item.id === data.message.id ? data.message : item
               )
             );
             toast.success("Success!");

@@ -24,7 +24,8 @@ const App: React.FC = () => {
             <Route path="/users/*" element={<UsersTable />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />}></Route>
-          <Route path="/users/:id/edit" element={<UserEditPage />} />
+          <Route path="" element={<PrivateRouter />}>
+          <Route path="/users/:id/todos" element={<UserEditPage />} /></Route>
         </Routes>
       </Router>
       <ToastContainer />

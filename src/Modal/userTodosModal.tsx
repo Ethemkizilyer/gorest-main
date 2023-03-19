@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import {  getAddTodo, getAllUsers, getTodos} from "../api/users";
+import { getAddTodo, getTodos } from "../api/users";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 
 type todos = {
-  id: string  ;
+  id: string;
   user_id: any;
   title: string;
   due_on: string;
@@ -12,19 +12,18 @@ type todos = {
 };
 
 interface UserModalProps {
-  onAddUser: (user:todos) => void;
+  onAddUser: (user: todos) => void;
   id: string | undefined;
   show: boolean;
   onHide: () => void;
 }
-const TodosModal = ({ show, onHide, onAddUser,id}: UserModalProps) => {
+const TodosModal = ({ show, onHide, onAddUser, id }: UserModalProps) => {
   const [title, setTitle] = useState("");
   const [deadln, setDeadln] = useState("");
-  const [statu, setStatu] = useState("");
 
-  const {token,eleman} = useSelector((state: any) => state.auth);
+  const { token } = useSelector((state: any) => state.auth);
 
-  const handleAddUser = async() => {
+  const handleAddUser = async () => {
     const newUser: todos = {
       id: "1",
       user_id: id,
@@ -32,14 +31,11 @@ const TodosModal = ({ show, onHide, onAddUser,id}: UserModalProps) => {
       due_on: deadln,
       status: "pending",
     };
-    console.log(deadln)
-    console.log(newUser);
-    await getAddTodo(newUser, token,id);
+    await getAddTodo(newUser, token, id);
     await getTodos(id, token);
     onAddUser(newUser);
-
-    // await getAllUsers(token, eleman);
     setTitle("");
+    setDeadln("");
     onHide();
   };
 

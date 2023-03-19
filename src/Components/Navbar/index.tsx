@@ -14,17 +14,16 @@ import { useDispatch } from "react-redux";
 import { persistor } from "../../app/store";
 import { toast } from "react-toastify";
 
-
 const pages = ["Home"];
 
 const NavBar: React.FC = () => {
-  const {currentUser,token} = useSelector((state: any) => state.auth);
+  const { currentUser, token } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogout = () => {
     dispatch(logoutSuccess());
-    persistor.purge(); 
+    persistor.purge();
     navigate("/");
   };
 
@@ -32,7 +31,6 @@ const NavBar: React.FC = () => {
     <Navbar bg="light" expand="lg">
       <Container>
         <Navbar.Brand>Cloud4Feed</Navbar.Brand>
-
         <Nav>
           {currentUser ? (
             <NavDropdown
@@ -50,7 +48,6 @@ const NavBar: React.FC = () => {
               Login
             </NavLink>
           )}
-
           {pages.map((page) => (
             <Button key={page}>
               <Link

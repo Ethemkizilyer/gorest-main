@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import { addUsers, getAllUsers,putUser } from "../api/users";
 import { User, Gender, Status } from "../Components/UsersTable";
-import { useSelector } from "react-redux/es/hooks/useSelector";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import {IUserData} from "../types";
+import { IUserData } from "../types";
 
 interface UserModalProps {
   onAddUser: (user: IUserData) => void;
@@ -13,18 +9,15 @@ interface UserModalProps {
   show: boolean;
   onHide: () => void;
 }
-const UpdateUserModal = ({ row,show, onHide, onAddUser}: UserModalProps) => {
+const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
   const [name, setName] = useState(row?.name);
 
   const [email, setEmail] = useState(row?.email);
-  const [person, setPerson] = useState<IUserData>({id:row.id,name:"",email:"",gender:"",status:""});
+
   const [gender, setGender] = useState<Gender>(row?.gender);
   const [status, setStatus] = useState<Status>(row?.status);
 
-  const {token,eleman} = useSelector((state: any) => state.auth);
-
-const navTo = useNavigate();
-  const handleAddUser = async() => {
+  const handleAddUser = async () => {
     const newUser: User = {
       id: row?.id,
       name,
@@ -32,25 +25,9 @@ const navTo = useNavigate();
       gender,
       status,
     };
-    
-    console.log(newUser);
-    // await putUser(newUser, token)
-    //   .then((data) => {
-    //     if (!data.ok) {
-    //       toast.error(`${data.message}`);
-    //     }
-    //     if (data.ok) {
-    //       getAllUsers(token,eleman)
-    //       toast.success("Success!");
-    //       navTo("/users");
-    //     }
-    //   })
-    //   .catch((e) => {
-    //     throw new Error(e);
-    //   });;
+
     onAddUser(newUser);
 
-    // await getAllUsers(token, eleman);
     setName("");
     setEmail("");
     setGender(Gender.Male);
@@ -100,9 +77,7 @@ const navTo = useNavigate();
             <Form.Label>Status</Form.Label>
             <Form.Select
               value={status}
-              onChange={(e) =>
-                setStatus(e.target.value as Status)
-              }
+              onChange={(e) => setStatus(e.target.value as Status)}
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>
