@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import {
   Button,
@@ -30,7 +30,7 @@ const NavBar: React.FC = () => {
   return (
     <Navbar bg="light" expand="lg">
       <Container>
-        <Navbar.Brand>Cloud4Feed</Navbar.Brand>
+        <Navbar.Brand style={{ fontWeight: "bold" }}>Cloud4Feed</Navbar.Brand>
         <Nav>
           {currentUser ? (
             <NavDropdown
@@ -49,14 +49,14 @@ const NavBar: React.FC = () => {
             </NavLink>
           )}
           {pages.map((page) => (
-            <Button key={page}>
-              <Link
-                style={{ textDecoration: "none", color: "white" }}
-                to={`/users`}
-                onClick={() => !token && toast.error("Kullanıcı Giriniz!")}
-              >
-                {page}
-              </Link>
+            <Button
+              key={page}
+              style={{ color: "white" }}
+              onClick={() =>
+                !token ? toast.error("Enter the user!", { position: 'top-center' }) : navigate("/users")
+              }
+            >
+              {page}
             </Button>
           ))}
         </Nav>

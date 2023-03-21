@@ -35,24 +35,28 @@ const TokenInput = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(response);
-      
+
+
       // yanıt kontrol edilir
       if (response.status === 401) {
-        toast.error("Geçersiz token. Lütfen tekrar deneyin.");
+        toast.error("Invalid token. Please try again.", {
+          position: "top-center",
+        });
         setToken("");
         setUsername("");
       } else {
         dispatch(loginSuccess({ currentUser: username, token: token }));
 
-        toast.success(`Hoşgeldin ${username}!`);
+        toast.success(`Welcome ${username}!`, { position: "top-center" });
         setToken("");
         setUsername("");
 
         return navigate("/users");
       }
     } else {
-      toast.error("Kullanıcı adınızı ve token ekleyin!");
+      toast.error("Add your username and token!", {
+        position: "top-center",
+      });
     }
   };
   const isFormValid =
@@ -62,7 +66,7 @@ const TokenInput = () => {
     /[a-zA-Z]/.test(token);
 
   return (
-    <Form className="mt-3 w-75" >
+    <Form className="mt-3 w-75">
       <Form.Group controlId="formUsername">
         <Form.Label>Username</Form.Label>
         <Form.Control
@@ -88,7 +92,7 @@ const TokenInput = () => {
         </InputGroup>
       </Form.Group>
       <Button
-        className="w-100 mt-2"
+        className="w-100 mt-2 mb-2"
         variant="primary"
         type="button"
         onClick={handleLogin}
@@ -96,6 +100,7 @@ const TokenInput = () => {
       >
         Login
       </Button>
+      <a href="https://gorest.co.in/consumer/login">Click here for the token</a>
     </Form>
   );
 };
