@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import "./App.css"
 import Home from "./Components/HomePage";
 import Navbar from "./Components/Navbar";
-import UserEditPage from "./Components/UserEditPage";
+import UserTodoPage from "./Components/UserTodoPage";
 import UsersTable from "./Components/UsersTable";
 import PrivateRouter from "./router/PrivateRouter";
 
@@ -25,7 +25,8 @@ const App: React.FC = () => {
           </Route>
           <Route path="*" element={<Navigate to="/" />}></Route>
           <Route path="" element={<PrivateRouter />}>
-          <Route path="/users/:id/todos" element={<UserEditPage />} /></Route>
+            <Route path="/users/:id/todos" element={<UserTodoPage />} />
+          </Route>
         </Routes>
       </Router>
       <ToastContainer />
