@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import { User, Gender, Status } from "../Components/UsersTable";
-import { IUserData } from "../types";
+import { Gender, Status } from "../Components/UsersTable";
+import { Person } from "../features/userSlice";
+
 
 interface UserModalProps {
-  onAddUser: (user: IUserData) => void;
+  onAddUser: (user: Person) => void;
   row: any;
   show: boolean;
   onHide: () => void;
@@ -18,7 +19,7 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
   const [status, setStatus] = useState<Status>(row?.status);
 
   const handleAddUser = async () => {
-    const newUser: User = {
+    const newUser: Person = {
       id: row?.id,
       name,
       email,
@@ -27,9 +28,6 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
     };
 
     onAddUser(newUser);
-
-    setName("");
-    setEmail("");
     setGender(Gender.Male);
     setStatus(Status.Active);
     onHide();

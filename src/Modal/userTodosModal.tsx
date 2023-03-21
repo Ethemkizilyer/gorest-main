@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import { getAddTodo, getTodos } from "../api/users";
 import { useSelector } from "react-redux/es/hooks/useSelector";
+import { useDispatch } from "react-redux";
+import { addTodo, AddTodoPayload } from "../features/todosSlice";
+import { AppDispatch } from "../app/store";
 
 type todos = {
   id: string;
@@ -11,29 +13,28 @@ type todos = {
   status: string;
 };
 
+
 interface UserModalProps {
-  onAddUser: (user: todos) => void;
   id: string | undefined;
   show: boolean;
   onHide: () => void;
 }
-const TodosModal = ({ show, onHide, onAddUser, id }: UserModalProps) => {
+const TodosModal = ({ show, onHide, id }: UserModalProps) => {
   const [title, setTitle] = useState("");
   const [deadln, setDeadln] = useState("");
-
+const dispacth: AppDispatch = useDispatch();
   const { token } = useSelector((state: any) => state.auth);
 
   const handleAddUser = async () => {
-    const newUser: todos = {
-      id: "1",
+    const newUser: AddTodoPayload  = {
       user_id: id,
       title,
       due_on: deadln,
       status: "pending",
+      token,
+      id
     };
-    await getAddTodo(newUser, token, id);
-    await getTodos(id, token);
-    onAddUser(newUser);
+    dispacth(addTodo(newUser));
     setTitle("");
     setDeadln("");
     onHide();
@@ -57,7 +58,7 @@ const TodosModal = ({ show, onHide, onAddUser, id }: UserModalProps) => {
           <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
             <Form.Label>Deadline</Form.Label>
             <Form.Control
-              type="date"
+              type="datetime-local"
               onChange={(e) => setDeadln(e.target.value)}
               placeholder="Todo"
             />

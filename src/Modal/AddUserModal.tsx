@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-import { addUsers } from "../api/users";
 import { User, Gender, Status } from "../Components/UsersTable";
 import { useSelector } from "react-redux/es/hooks/useSelector";
+import { AppDispatch } from "../app/store";
+import { useDispatch } from "react-redux";
+import { addUser } from "../features/userSlice";
 
 interface UserModalProps {
   onAddUser: (user: User) => void;
@@ -16,8 +18,8 @@ const UserModal = ({ show, onHide, onAddUser }: UserModalProps) => {
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.Male);
   const [status, setStatus] = useState<Status>(Status.Active);
-
-  const { token } = useSelector((state: any) => state.auth);
+const dispatch: AppDispatch = useDispatch();
+  const { token,eleman } = useSelector((state: any) => state.auth);
 
   const handleAddUser = async () => {
     const newUser: User = {
@@ -29,7 +31,8 @@ const UserModal = ({ show, onHide, onAddUser }: UserModalProps) => {
     };
 
     console.log(newUser);
-    await addUsers(newUser, token);
+dispatch(addUser({eleman,token,newUser}))
+
     onAddUser(newUser);
 
     setName("");
