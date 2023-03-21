@@ -3,7 +3,7 @@ import {Form} from "react-bootstrap";
 
 type Props = {
   gender: string;
-  setGender: React.FC<React.SetStateAction<string>>;
+  setGender: React.FC<React.SetStateAction<string>> | any;
 };
 
 const GenderSelect = ({ gender, setGender }: Props) => {

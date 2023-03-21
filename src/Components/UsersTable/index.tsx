@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { deleteUser, getAllUsers } from "../../api/users";
 import { Button, Pagination } from "react-bootstrap";
 import { Grid, Box, CircularProgress } from "@mui/material";
 import GenderSelect from "../GenderSelect";
@@ -12,6 +11,8 @@ import { pageMinus, pagePlus } from "../../features/authSlice";
 import { toast } from "react-toastify";
 import CartCard from "../CartCard";
 import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
+import { deleteUser, getBudgetAsync } from "../../features/userSlice";
+import { AppDispatch } from "../../app/store";
 
 export type User = {
   id: string;
@@ -37,30 +38,26 @@ const UsersTable: React.FC = () => {
   const DEFAULT_ROWS_INDEX = 6;
   const DEFAULT_GENDER = "All";
 
-  const [rows, setRows] = useState<Array<IUserData>>([]);
   const [pageQty, setPageQty] = useState<number>(DEFAULT_PAGE_INDEX);
   const [page, setPage] = useState<number>(DEFAULT_PAGE_INDEX);
   const [gender, setGender] = useState<string>(DEFAULT_GENDER);
   const [isLoading, setLoading] = useState<boolean>();
 
   const { token, eleman } = useSelector((state: any) => state.auth);
+  const { users, person } = useSelector((state: any) => state.user);
+  const [rows, setRows] = useState<Array<IUserData> | any>(users);
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [userse, setUsers] = useState<User[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const handleAddUser = (user: User) => {
     dispatch(pagePlus());
-    getAllUsers(token, eleman).then((data: Array<IUserData>) => {
-      console.log(data);
-      setLoading(false);
-      setRows(data);
-
-      setPageQty(
-        Math.ceil(data.length / DEFAULT_ROWS_INDEX) ||
-          Math.ceil(selectedByGender().length / DEFAULT_ROWS_INDEX)
-      );
-    });
-    setUsers([...users, user]);
+    setPageQty(
+      Math.ceil(users?.length / DEFAULT_ROWS_INDEX) ||
+        Math.ceil(selectedByGender().length / DEFAULT_ROWS_INDEX)
+    );
+    setLoading(false);
+    setUsers([...userse, user]);
   };
 
   const [showModals, setShowModals] = useState(false);
@@ -75,7 +72,7 @@ const UsersTable: React.FC = () => {
       toast.error("Go home and add token!");
     }
     if (id && token) {
-      await deleteUser(id, token, eleman);
+      await dispatch(deleteUser({ id, token, eleman }));
 
       dispatch(pageMinus());
     }
@@ -83,21 +80,20 @@ const UsersTable: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
+    dispatch(getBudgetAsync({ eleman, token }));
+    setLoading(false);
+  }, [dispatch,eleman]);
 
-    getAllUsers(token, eleman).then((data: Array<IUserData>) => {
-      console.log(data);
-      setLoading(false);
-      setRows(data);
-      setPageQty(
-        Math.ceil(data.length / DEFAULT_ROWS_INDEX) ||
-          Math.ceil(selectedByGender().length / DEFAULT_ROWS_INDEX)
-      );
-    });
-  }, [gender, eleman]);
+  useEffect(() => {
+    setPageQty(
+      Math.ceil(selectedByGender()?.length / DEFAULT_ROWS_INDEX) ||
+        Math.ceil(selectedByGender()?.length / DEFAULT_ROWS_INDEX)
+    );
+    renderPaginationItems();
+  }, [gender, pageQty, users]);
 
   const selectedByGender = () => {
-    console.log("rows", rows);
-    return rows.filter((row: IUserData) => {
+    return users?.filter((row: IUserData) => {
       if (gender.toLocaleLowerCase() === DEFAULT_GENDER.toLocaleLowerCase()) {
         return row.gender;
       }
@@ -121,11 +117,11 @@ const UsersTable: React.FC = () => {
     const startIndex = (activePage - 1) * cardsPerPage;
     const endIndex = startIndex + cardsPerPage;
     return selectedByGender()
-      .slice(startIndex, endIndex)
-      .map((card) => (
+      ?.slice(startIndex, endIndex)
+      ?.map((card: User) => (
         <CartCard
           setRows={setRows}
-          rows={rows}
+          // users={users}
           row={card}
           handleConfirm={handleConfirm}
           key={card.id}
@@ -210,6 +206,7 @@ const UsersTable: React.FC = () => {
         <ArrowRight />
       </Pagination.Next>
     );
+    // setPage(paginationItems.length);
     return paginationItems;
   };
 

@@ -5,15 +5,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import UpdateUserModal from "../../Modal/UpdateUser";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Gender, Status } from "../UsersTable";
 import { toast } from "react-toastify";
-import { getAllUsers, putUser } from "../../api/users";
+import { AppDispatch } from "../../app/store";
+import { Person, putUser } from "../../features/userSlice";
 interface CartProps {
   row: IUserData;
   handleConfirm: (id: string | number) => void;
-  setRows: React.FC<React.SetStateAction<IUserData[]>>;
-  rows: IUserData[];
+  setRows: React.FC<React.SetStateAction<IUserData[]>> | any;
 }
 export type User = {
   id: string;
@@ -23,7 +23,6 @@ export type User = {
   status: Status;
 };
 const CartCard: React.FC<CartProps> = ({
-  rows,
   setRows,
   row,
   handleConfirm,
@@ -31,6 +30,9 @@ const CartCard: React.FC<CartProps> = ({
   const { token, eleman } = useSelector((state: any) => state.auth);
   const [showModals, setShowModals] = useState(false);
   const [showModa, setShowModa] = useState(false);
+  const {users,person}= useSelector((state:any)=>state.user)
+
+  const dispatch: AppDispatch = useDispatch();
   const navTo = useNavigate();
   const handleDelete = () => {
     handleConfirm(row.id);
@@ -48,32 +50,17 @@ const CartCard: React.FC<CartProps> = ({
     setShowModals(false);
   };
 
-  const changeUserHandler = (user: IUserData) => {
+  const changeUserHandler = (user: Person) => {
     console.log(token);
     if (!token) {
       toast.error("Go home and add token!");
     }
     if (user && token) {
-      putUser(user, token, eleman)
-        .then((data: any) => {
-          if (!data.ok) {
-            toast.error(`${data.message}`);
-          }
-          if (data.ok) {
-            setRows(
-              rows.map((item) =>
-                item.id === data.message.id ? data.message : item
-              )
-            );
-            toast.success("Success!");
-            navTo("/users");
-          }
-        })
-        .catch((e) => {
-          throw new Error(e);
-        });
+dispatch(putUser({eleman,token,user}))
+    
+
     }
-    return getAllUsers(token, eleman);
+
   };
 
   return (
@@ -90,7 +77,8 @@ const CartCard: React.FC<CartProps> = ({
           {row.email}
           <br />
           <strong>Gender:</strong> {row.gender} <br />
-          <strong>Status:</strong> {row.status}
+          <strong>Status:</strong>{" "}
+          <span style={{color: row.status==="active" ? "green" : "red"}}>{row.status}</span>
         </Card.Text>
         <Col
           style={{ width: "80%" }}
