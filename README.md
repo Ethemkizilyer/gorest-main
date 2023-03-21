@@ -1,24 +1,31 @@
-# Test app for "Art My Web" with Gorest API.
+# GoRest API Kullanarak Kullanıcı Yönetim Sistemi
 
-## Getting Started
+Bu proje, GoRest API'yi kullanarak bir kullanıcı yönetim sistemi uygulaması oluşturmak için tasarlanmıştır. Uygulama, kullanıcıların listelendiği bir ana sayfa, kullanıcıların ayrıntılarının görüntülendiği bir ayrıntı sayfası ve kullanıcılar için görevlerin listelendiği bir başka ayrıntı sayfası içermektedir.
 
-In the project directory, you can run:
+### Adım-1 : Giriş Ekranı
 
-### `npm ci`
+► PATH: /consumer/login.<br>
+► Login ekranı, kullanıcı adı ve token alanlarından oluşur. Kullanıcı adı alanı en az 3 karakter uzunluğunda, token alanı ise en az bir rakam ve en az bir harf içermelidir.<br>
+► Kullanıcı adı ve token girilmeden giriş butonu etkisizdir.<br>
+► Göster / Gizle ikonu, token alanını gizlemek veya göstermek için kullanılabilir.<br>
+► Rastgele bir kullanıcı adı ve yukarıdaki adrese login olarak alınacak token ile sisteme giriş yapılacaktır. Girilen token local-storage'de saklanır.
 
-### `npm start`
+### Adım-2 : Listeleme Ekranı
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+► PATH: /public/v2/users<br>
+► Method: GET<br>
+► Authorization: Bearer Token<br>
+► Bootstrap kart yapısı kullanılarak her kullanıcı için bir kart oluşturulacaktır. Her kartta kullanıcının bilgileri yer alır.<br>
+► Kullanıcının bilgileri kartın altındaki "Güncelle" butonuna basılarak güncellenebilir.<br>
+► Yeni bir kullanıcı eklenebilir. Bu işlem, "Ekle" butonuna basılarak açılacak bir moda yoluyla gerçekleştirilebilir.<br>
+► Bir kullanıcı silinebilir. Bu işlem, kartın altındaki "Sil" butonuna basılarak doğrulama moda yoluyal gerçekleştirilebilir.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Adım-3 : Detay Ekranı
 
-### Technologies
+► PATH: /public/v2/users/:id/todos<br>
+► Method: GET<br>
+► Authorization: Bearer Token<br>
+► Kullanıcının kartı üzerinde yer alan "Detay" butonuna basıldığında, kullanıcının görevleri tablo şeklinde listelenecektir.<br>
+► Yeni bir görev eklenebilir. Bu işlem, "Ekle" butonuna basılarak açılacak bir moda yoluyla gerçekleştirilebilir.
 
-React, React-router-dom, MaterialUI, React-toastify, TypeScript, RestAPI
 
-[https://62e1602433a014473887f71b--tangerine-panda-85576f.netlify.app/](https://62e1602433a014473887f71b--tangerine-panda-85576f.netlify.app/)
-
-
-ACCESS_TOKEN = ef7a8354d58822419f5ed2b4dffd1ec5ef730ffa0c3913b804096e5069db360e
