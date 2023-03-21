@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { Button, Container, Spinner, Table } from "react-bootstrap";
@@ -19,24 +18,21 @@ type todos = {
 };
 
 const UserEditPage: React.FC = () => {
-
   const [isLoading, setLoading] = useState<boolean>();
   const navigate = useNavigate();
   const { token } = useSelector((state: any) => state.auth);
   const { todos } = useSelector((state: any) => state.todos);
   let { id } = useParams<{ id?: string | undefined }>();
   const [showModal, setShowModal] = useState(false);
-const dispacth: AppDispatch = useDispatch();
+  const dispacth: AppDispatch = useDispatch();
   useEffect(() => {
     setLoading(true);
 
     if (id) {
-      dispacth(getTodosAsync({id,token}))
+      dispacth(getTodosAsync({ id, token }));
       setLoading(false);
-
     }
   }, [showModal]);
-
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -52,13 +48,9 @@ const dispacth: AppDispatch = useDispatch();
         <ArrowLeft />
       </Button>
       <Button variant="primary" onClick={() => setShowModal(true)}>
-        Yorum Ekle
+        Add to todo
       </Button>
-      <TodosModal
-        show={showModal}
-        onHide={handleModalClose}
-        id={id}
-      />
+      <TodosModal show={showModal} onHide={handleModalClose} id={id} />
       {isLoading ? (
         <Spinner
           className="text-center mx-auto "
@@ -98,7 +90,7 @@ const dispacth: AppDispatch = useDispatch();
             ) : (
               <tr>
                 <td colSpan={4} className="text-center">
-                  Görüntülenecek Veri Yok.
+                  There is no Data to display.
                 </td>
               </tr>
             )}

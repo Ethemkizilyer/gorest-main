@@ -22,15 +22,11 @@ export type User = {
   gender: Gender;
   status: Status;
 };
-const CartCard: React.FC<CartProps> = ({
-  setRows,
-  row,
-  handleConfirm,
-}) => {
+const CartCard: React.FC<CartProps> = ({ setRows, row, handleConfirm }) => {
   const { token, eleman } = useSelector((state: any) => state.auth);
   const [showModals, setShowModals] = useState(false);
   const [showModa, setShowModa] = useState(false);
-  const {users,person}= useSelector((state:any)=>state.user)
+  const { users, person } = useSelector((state: any) => state.user);
 
   const dispatch: AppDispatch = useDispatch();
   const navTo = useNavigate();
@@ -56,11 +52,8 @@ const CartCard: React.FC<CartProps> = ({
       toast.error("Go home and add token!");
     }
     if (user && token) {
-dispatch(putUser({eleman,token,user}))
-    
-
+      dispatch(putUser({ eleman, token, user }));
     }
-
   };
 
   return (
@@ -78,7 +71,9 @@ dispatch(putUser({eleman,token,user}))
           <br />
           <strong>Gender:</strong> {row.gender} <br />
           <strong>Status:</strong>{" "}
-          <span style={{color: row.status==="active" ? "green" : "red"}}>{row.status}</span>
+          <span style={{ color: row.status === "active" ? "green" : "red" }}>
+            {row.status}
+          </span>
         </Card.Text>
         <Col
           style={{ width: "80%" }}
@@ -97,7 +92,7 @@ dispatch(putUser({eleman,token,user}))
             row={row}
           />
           <Button
-            variant="success"
+            variant="info"
             onClick={() => rowClickHandler(row.id.toString())}
           >
             Detail

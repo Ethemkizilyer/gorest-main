@@ -53,7 +53,9 @@ const NavBar: React.FC = () => {
               key={page}
               style={{ color: "white" }}
               onClick={() =>
-                !token ? toast.error("Enter the user!", { position: 'top-center' }) : navigate("/users")
+                !token
+                  ? toast.error("Enter the user!", { position: "top-center" })
+                  : navigate("/users")
               }
             >
               {page}

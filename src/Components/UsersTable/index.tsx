@@ -82,7 +82,7 @@ const UsersTable: React.FC = () => {
     setLoading(true);
     dispatch(getBudgetAsync({ eleman, token }));
     setLoading(false);
-  }, [dispatch,eleman]);
+  }, [dispatch, eleman]);
 
   useEffect(() => {
     setPageQty(
@@ -215,8 +215,12 @@ const UsersTable: React.FC = () => {
       <div className="d-flex justify-content-between vertical-align-middle align-items-center mt-3">
         <GenderSelect setGender={setGender} gender={gender} />
         <Pagination>{renderPaginationItems()}</Pagination>
-        <Button variant="primary" onClick={() => setShowModal(true)}>
-          Kullanıcı Ekle
+        <Button
+          variant="success"
+          style={{ fontWeight: "bold" }}
+          onClick={() => setShowModal(true)}
+        >
+          Add a User
         </Button>
         <UserModal
           onAddUser={handleAddUser}

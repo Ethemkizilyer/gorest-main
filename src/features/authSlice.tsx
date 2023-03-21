@@ -1,15 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-
-
-
 export interface UserState {
   currentUser: string | null;
   token: string | null;
   loading: boolean;
   error: boolean;
   eleman: number;
-  status:number |undefined
+  status: number | undefined;
 }
 
 const initialState: UserState = {
@@ -23,7 +20,7 @@ const initialState: UserState = {
 
 export const handleLogin = createAsyncThunk(
   "login/getLoginAsync",
-  async ( token: string ) => {
+  async (token: string) => {
     try {
       const response = await fetch("https://gorest.co.in/public/v2/users", {
         method: "POST",
@@ -34,16 +31,12 @@ export const handleLogin = createAsyncThunk(
         },
       });
 
-
-      return response.status
-    } catch (error:any) {
+      return response.status;
+    } catch (error: any) {
       console.log(error.message);
     }
-
-
   }
 );
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -81,14 +74,14 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = false;
       })
-      .addCase(handleLogin.fulfilled, (state,{payload}) => {
-        state.status = payload
+      .addCase(handleLogin.fulfilled, (state, { payload }) => {
+        state.status = payload;
         state.loading = false;
-state.error=true
+        state.error = true;
       })
       .addCase(handleLogin.rejected, (state) => {
         state.loading = false;
-  state.error = false;
+        state.error = false;
       });
   },
 });

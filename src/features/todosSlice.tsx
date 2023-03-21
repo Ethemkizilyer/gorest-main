@@ -8,12 +8,12 @@ interface Todo {
   status: string;
 }
 
-
-
-
-export const getTodosAsync = createAsyncThunk<Todo[],{ id: string | undefined; token: string }>(
+export const getTodosAsync = createAsyncThunk<
+  Todo[],
+  { id: string | undefined; token: string }
+>(
   "todos/getTodosAsync",
-  async ({ id, token }:{ id: string | undefined; token: string }) => {
+  async ({ id, token }: { id: string | undefined; token: string }) => {
     try {
       const { data } = await axios.get<Todo[]>(
         `https://gorest.co.in/public/v2/users/${id}/todos`,
@@ -43,12 +43,10 @@ export interface AddTodoPayload {
   id: string | undefined;
 }
 
-
-
 export const addTodo = createAsyncThunk<Todo, AddTodoPayload>(
   "addTodo/addTodoAsync",
   async function (payload) {
-    const { title, due_on, status,token,id } = payload;
+    const { title, due_on, status, token, id } = payload;
     const body = JSON.stringify({ title, due_on, status });
     const data = await fetch(
       `https://gorest.co.in/public/v2/users/${id}/todos`,
@@ -67,7 +65,7 @@ export const addTodo = createAsyncThunk<Todo, AddTodoPayload>(
       }
       return response.json() as Promise<Todo>;
     });
-    getTodosAsync({token, id});
+    getTodosAsync({ token, id });
     console.log(data);
     return data;
   }

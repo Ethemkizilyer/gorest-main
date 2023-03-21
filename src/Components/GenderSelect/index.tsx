@@ -1,5 +1,5 @@
 import React from "react";
-import {Form} from "react-bootstrap";
+import { Form } from "react-bootstrap";
 
 type Props = {
   gender: string;
@@ -12,7 +12,11 @@ const GenderSelect = ({ gender, setGender }: Props) => {
   };
 
   return (
-    <Form.Group className="mb-2" style={{ width: "110px" }} controlId="formGridState">
+    <Form.Group
+      className="mb-2"
+      style={{ width: "110px" }}
+      controlId="formGridState"
+    >
       <Form.Label as="h5" id="gender-select-label">
         Gender
       </Form.Label>

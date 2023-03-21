@@ -36,7 +36,6 @@ const TokenInput = () => {
         },
       });
 
-
       // yanıt kontrol edilir
       if (response.status === 401) {
         toast.error("Invalid token. Please try again.", {

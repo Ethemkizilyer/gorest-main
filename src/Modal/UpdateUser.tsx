@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import { toast } from "react-toastify";
 import { Gender, Status } from "../Components/UsersTable";
 import { Person } from "../features/userSlice";
-
 
 interface UserModalProps {
   onAddUser: (user: Person) => void;
@@ -27,10 +27,16 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
       status,
     };
 
+     if (name === "" || email === "") {
+       toast.error("Fill out the form!");
+     } else {
+      
     onAddUser(newUser);
     setGender(Gender.Male);
     setStatus(Status.Active);
     onHide();
+     }
+
   };
 
   return (
@@ -47,6 +53,7 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
               placeholder="Enter name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -57,6 +64,7 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -65,6 +73,7 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
             <Form.Select
               value={gender}
               onChange={(e) => setGender(e.target.value as Gender)}
+              required
             >
               <option value={Gender.Male}>Male</option>
               <option value={Gender.Female}>Female</option>
@@ -76,6 +85,7 @@ const UpdateUserModal = ({ row, show, onHide, onAddUser }: UserModalProps) => {
             <Form.Select
               value={status}
               onChange={(e) => setStatus(e.target.value as Status)}
+              required
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>

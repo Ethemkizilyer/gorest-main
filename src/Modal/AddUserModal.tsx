@@ -5,6 +5,7 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import { AppDispatch } from "../app/store";
 import { useDispatch } from "react-redux";
 import { addUser } from "../features/userSlice";
+import { toast } from "react-toastify";
 
 interface UserModalProps {
   onAddUser: (user: User) => void;
@@ -18,8 +19,8 @@ const UserModal = ({ show, onHide, onAddUser }: UserModalProps) => {
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.Male);
   const [status, setStatus] = useState<Status>(Status.Active);
-const dispatch: AppDispatch = useDispatch();
-  const { token,eleman } = useSelector((state: any) => state.auth);
+  const dispatch: AppDispatch = useDispatch();
+  const { token, eleman } = useSelector((state: any) => state.auth);
 
   const handleAddUser = async () => {
     const newUser: User = {
@@ -30,16 +31,21 @@ const dispatch: AppDispatch = useDispatch();
       status,
     };
 
-    console.log(newUser);
-dispatch(addUser({eleman,token,newUser}))
+ if (name === "" || email === "" ) {
+   toast.error("Fill out the form!");
+ } else {
+ dispatch(addUser({ eleman, token, newUser }));
+ onAddUser(newUser);
+ setName("");
+ setEmail("");
+ setGender(Gender.Male);
+ setStatus(Status.Active);
+ onHide();
+ }
+    
 
-    onAddUser(newUser);
-
-    setName("");
-    setEmail("");
-    setGender(Gender.Male);
-    setStatus(Status.Active);
-    onHide();
+ 
+    
   };
 
   return (
@@ -56,6 +62,7 @@ dispatch(addUser({eleman,token,newUser}))
               placeholder="Enter name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -66,6 +73,7 @@ dispatch(addUser({eleman,token,newUser}))
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -74,6 +82,7 @@ dispatch(addUser({eleman,token,newUser}))
             <Form.Select
               value={gender}
               onChange={(e) => setGender(e.target.value as Gender)}
+              required
             >
               <option value={Gender.Male}>Male</option>
               <option value={Gender.Female}>Female</option>
@@ -85,6 +94,7 @@ dispatch(addUser({eleman,token,newUser}))
             <Form.Select
               value={status}
               onChange={(e) => setStatus(e.target.value as Status)}
+              required
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>
