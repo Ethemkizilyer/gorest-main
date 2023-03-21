@@ -1,6 +1,7 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import authReducer from "../features/authSlice";
-import storage from "redux-persist/lib/storage"; 
+import userSlice from "../features/userSlice";
+import storage from "redux-persist/lib/storage";
 import {
   persistStore,
   persistReducer,
@@ -11,9 +12,10 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+import todosSlice from "../features/todosSlice";
 
 const persistConfig = {
-  key: "root",
+  key: "bakar",
   storage,
 };
 
@@ -22,7 +24,8 @@ const persistedReducer = persistReducer(persistConfig, authReducer);
 const store = configureStore({
   reducer: {
     auth: persistedReducer,
-    // stock: stockReducer,
+    user: userSlice,
+    todos: todosSlice,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -35,3 +38,13 @@ const store = configureStore({
 });
 export const persistor = persistStore(store);
 export default store;
+
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;
+
