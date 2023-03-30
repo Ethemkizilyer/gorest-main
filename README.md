@@ -1,3 +1,9 @@
+
+
+https://user-images.githubusercontent.com/106928233/228806118-cfb4823b-2c3c-4f49-8df2-511db569ac76.mp4
+
+
+
 # GoRest API Kullanarak Kullanıcı Yönetim Sistemi
 
 Bu proje, GoRest API'yi kullanarak bir kullanıcı yönetim sistemi uygulaması oluşturmak için tasarlanmıştır. Uygulama, kullanıcıların listelendiği bir ana sayfa, kullanıcıların ayrıntılarının görüntülendiği bir ayrıntı sayfası ve kullanıcılar için görevlerin listelendiği bir başka ayrıntı sayfası içermektedir.
