@@ -99,7 +99,7 @@ const TokenInput = () => {
       >
         Login
       </Button>
-      <a href="https://gorest.co.in/consumer/login">Click here for the token</a>
+      <a target="blank" href="https://gorest.co.in/consumer/login">Click here for the token</a>
     </Form>
   );
 };
